@@ -99,10 +99,10 @@ public class ChatHistory {
             }
         }
         sendUpdate(message, IChatMessageProcessor.UpdateType.ADDED);
-        messages.add(0, message);
+        messages.addFirst(message);
         while (this.messages.size() > maxLines) {
             sendUpdate(
-                    this.messages.remove(this.messages.size() - 1),
+                    this.messages.removeLast(),
                     IChatMessageProcessor.UpdateType.REMOVE);
         }
         return true;

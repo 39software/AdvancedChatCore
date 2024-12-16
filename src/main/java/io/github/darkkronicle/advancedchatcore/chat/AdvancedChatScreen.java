@@ -100,11 +100,7 @@ public class AdvancedChatScreen extends GuiBase {
     }
 
     public void resetCurrentMessage() {
-        try {
-            this.messageHistorySize = this.client.inGameHud.getChatHud().getMessageHistory().size(); //dont ask
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.messageHistorySize = this.client.inGameHud.getChatHud().getMessageHistory().size();
     }
 
     @Override
@@ -138,16 +134,16 @@ public class AdvancedChatScreen extends GuiBase {
             this.chatField.setMaxLength(256);
         }
         this.chatField.setDrawsBackground(false);
-        if (!this.originalChatText.equals("")) {
+        if (!this.originalChatText.isEmpty()) {
             this.chatField.setText(this.originalChatText);
         } else if (ConfigStorage.ChatScreen.PERSISTENT_TEXT.config.getBooleanValue()
-                && !last.equals("")) {
+                && !last.isEmpty()) {
             this.chatField.setText(last);
         }
         this.chatField.setChangedListener(this::onChatFieldUpdate);
 
         // Add settings button
-        rightSideButtons.add("settings", new IconButton(0, 0, 14, 64, new Identifier(AdvancedChatCore.MOD_ID, "textures/gui/settings.png"), (button) -> GuiBase.openGui(GuiConfigHandler.getInstance().getDefaultScreen())));
+        rightSideButtons.add("settings", new IconButton(0, 0, 14, 64, Identifier.of(AdvancedChatCore.MOD_ID, "textures/gui/settings.png"), (button) -> GuiBase.openGui(GuiConfigHandler.getInstance().getDefaultScreen())));
 
         this.addSelectableChild(this.chatField);
 
@@ -387,6 +383,7 @@ public class AdvancedChatScreen extends GuiBase {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+        this.client.inGameHud.getChatHud().render(context, this.client.inGameHud.getTicks(), mouseX, mouseY, true);
         ChatHud hud = client.inGameHud.getChatHud();
         this.setFocused(this.chatField);
         this.chatField.setFocused(true);
@@ -398,7 +395,6 @@ public class AdvancedChatScreen extends GuiBase {
         Style style = hud.getTextStyleAt(mouseX, mouseY);
         if (style != null && style.getHoverEvent() != null) {
             context.drawHoverEvent(textRenderer, style, mouseX, mouseY);
-            //this.renderTextHoverEffect(context, style, mouseX, mouseY);
         }
     }
 
@@ -410,4 +406,6 @@ public class AdvancedChatScreen extends GuiBase {
     private void setText(String text) {
         this.chatField.setText(text);
     }
+
+
 }

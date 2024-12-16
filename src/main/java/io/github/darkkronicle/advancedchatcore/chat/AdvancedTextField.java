@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import static net.minecraft.client.gui.screen.Screen.hasControlDown;
+
 public class AdvancedTextField extends TextFieldWidget {
 
     private final static int MAX_HISTORY = 50;
@@ -93,7 +95,7 @@ public class AdvancedTextField extends TextFieldWidget {
 
     public static boolean isUndo(int code) {
         // Undo (Ctrl + Z)
-        return code == KeyCodes.KEY_Z && Screen.hasControlDown() && !Screen.hasAltDown();
+        return code == KeyCodes.KEY_Z && hasControlDown() && !Screen.hasAltDown();
     }
 
     /** Triggers undo for the text box */
@@ -158,6 +160,7 @@ public class AdvancedTextField extends TextFieldWidget {
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
+
 
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
@@ -255,18 +258,17 @@ public class AdvancedTextField extends TextFieldWidget {
             x1 = x + this.width;
         }
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionProgram);
         RenderSystem.setShaderColor(0.0f, 0.0f, 1.0f, 1.0f);
 //        RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-        bufferBuilder.vertex(x1, y2, 0.0).next();
-        bufferBuilder.vertex(x2, y2, 0.0).next();
-        bufferBuilder.vertex(x2, y1, 0.0).next();
-        bufferBuilder.vertex(x1, y1, 0.0).next();
-        tessellator.draw();
+        BufferBuilder builder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+        builder.vertex(x1, y2, 0.0f)
+                .vertex(x2, y2, 0.0f)
+                .vertex(x2, y1, 0.0f)
+                .vertex(x1, y1, 0.0f);
+        BufferRenderer.drawWithGlobalProgram(builder.end());
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableColorLogicOp();
 //        RenderSystem.enableTexture();
@@ -334,7 +336,7 @@ public class AdvancedTextField extends TextFieldWidget {
         this.lastSaved = text;
         this.history.add(text);
         while (this.history.size() > MAX_HISTORY) {
-            this.history.remove(0);
+            this.history.removeFirst();
         }
     }
 
@@ -349,7 +351,7 @@ public class AdvancedTextField extends TextFieldWidget {
             return;
         }
         while (history.size() > index) {
-            history.remove(history.size() - 1);
+            history.removeLast();
         }
     }
 
@@ -372,5 +374,16 @@ public class AdvancedTextField extends TextFieldWidget {
     @Override
     public void appendClickableNarrations(NarrationMessageBuilder builder) {
         // Crashes here because Text is null
+    }
+
+    @Override
+    public void eraseWords(int wordOffset) {
+        if (!this.getText().isEmpty()) {
+            if (this.selectionEnd != this.selectionStart) {
+                this.setText("");
+            } else {
+                this.eraseCharacters(this.getWordSkipPosition(wordOffset) - this.selectionStart);
+            }
+        }
     }
 }

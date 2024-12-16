@@ -10,6 +10,8 @@ package io.github.darkkronicle.advancedchatcore;
 import fi.dy.masa.malilib.event.InitializationHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import io.github.darkkronicle.advancedchatcore.chat.AdvancedSleepingChatScreen;
+import io.github.darkkronicle.advancedchatcore.chat.ChatHistory;
+import io.github.darkkronicle.advancedchatcore.config.ConfigStorage;
 import io.github.darkkronicle.advancedchatcore.util.Colors;
 import io.github.darkkronicle.advancedchatcore.util.SyncTaskQueue;
 import java.io.FileInputStream;
@@ -23,6 +25,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -74,6 +77,12 @@ public class AdvancedChatCore implements ClientModInitializer {
                         GuiBase.openGui(null);
                     }
                 });
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, c) -> {
+            if (ConfigStorage.General.CLEAR_ON_DISCONNECT.config.getBooleanValue()) {
+                ChatHistory.getInstance().clearAll();
+                LOGGER.debug("Cleared chat successfully");
+            }
+        });
     }
 
     /**

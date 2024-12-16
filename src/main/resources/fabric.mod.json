@@ -5,13 +5,13 @@
   "name": "AdvancedChatCore",
   "description": "The core of all AdvancedChat features",
   "authors": [
-    "DarkKronicle"
+    "DarkKronicle",
+    "EnricoMessall"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/advancedchatcore",
-    "sources": "https://github.com/DarkKronicle/AdvancedChatCore",
-    "issues": "https://github.com/DarkKronicle/AdvancedChatCore/issues",
-    "discord": "https://discord.gg/WnaE3uZxDA"
+    "homepage": "https://arematics.com",
+    "sources": "https://github.com/Arematics/AdvancedChatCore",
+    "issues": "https://github.com/Arematics/AdvancedChatCore/issues"
   },
   "license": "MPL-v2",
   "icon": "assets/advancedchatcore/icon.png",
@@ -28,16 +28,9 @@
     "advancedchatcore.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.18",
+    "fabricloader": ">=0.15.11",
     "fabric": "*",
-    "minecraft": ">=1.20",
-    "malilib": ">=0.16.0"
-  },
-  "custom": {
-    "modmenu": {
-      "links": {
-        "modmenu.discord": "https://discord.gg/WnaE3uZxDA"
-      }
-    }
+    "minecraft": ">=1.21",
+    "malilib": ">=0.20.0"
   }
 }

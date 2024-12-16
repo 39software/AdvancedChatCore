@@ -50,7 +50,7 @@ public class MessageSender {
         }
         this.client.inGameHud.getChatHud().addToMessageHistory(unfiltered);
 
-        if (string.length() == 0) {
+        if (string.isEmpty()) {
             AdvancedChatCore.LOGGER.log(Level.WARN, "Blank message was attempted to be sent. " + unfiltered);
             return;
         }

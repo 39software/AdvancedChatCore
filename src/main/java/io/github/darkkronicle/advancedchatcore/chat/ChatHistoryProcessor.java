@@ -18,6 +18,8 @@ import java.time.format.DateTimeFormatter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.Style;
@@ -30,8 +32,12 @@ public class ChatHistoryProcessor implements IMessageProcessor {
 
     private static boolean sendToHud(Text text, @Nullable MessageSignatureData signature, MessageIndicator indicator) {
         if (AdvancedChatCore.FORWARD_TO_HUD) {
-            ((MixinChatHudInvoker) MinecraftClient.getInstance().inGameHud.getChatHud()).invokeAddMessage(
-                    text, signature, MinecraftClient.getInstance().inGameHud.getTicks(), indicator, false);
+            ChatHud chatHud = MinecraftClient.getInstance().inGameHud.getChatHud();
+            ChatHudLine chatHudLine = new ChatHudLine(MinecraftClient.getInstance().inGameHud.getTicks(), text, signature, indicator);
+
+            ((MixinChatHudInvoker) chatHud).invokeAddVisibleMessage(chatHudLine);
+            ((MixinChatHudInvoker) chatHud).invokeAddMessage(chatHudLine);
+
             return true;
         }
         return false;
@@ -63,7 +69,7 @@ public class ChatHistoryProcessor implements IMessageProcessor {
             Style style = Style.EMPTY;
             TextColor textColor = TextColor.fromRgb(color.color());
             style = style.withColor(textColor);
-            text.getSiblings().add(0, Text.literal(replaceFormat.replaceAll("%TIME%", time.format(format))).fillStyle(style));
+            text.getSiblings().addFirst(Text.literal(replaceFormat.replaceAll("%TIME%", time.format(format))).fillStyle(style));
         }
 
         int width = 0;

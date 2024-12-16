@@ -109,9 +109,9 @@ public class MessageDispatcher {
      * @param text Text that is received
      */
     public void handleText(Text text, @Nullable MessageSignatureData signature, @Nullable MessageIndicator indicator) {
-        boolean previouslyBlank = text.getString().length() == 0;
+        boolean previouslyBlank = text.getString().isEmpty();
         text = preFilter(text, signature, indicator);
-        if (text.getString().length() == 0 && !previouslyBlank) {
+        if (text.getString().isEmpty() && !previouslyBlank) {
             // No more
             return;
         }
